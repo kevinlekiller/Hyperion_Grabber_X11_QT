@@ -2,10 +2,9 @@
 
 // public
 
-hgx11net::hgx11net(const char *host, ushort port)
+hgx11net::hgx11net(QString host, ushort port)
 {
     _sock_p = new QTcpSocket(this);
-    connect(_sock_p, SIGNAL(disconnected()), this, SLOT(_disconnected()));
     _host_m = host;
     _port_m = port;
     this->_connectHost();
@@ -45,7 +44,13 @@ void hgx11net::setLedColor(quint8 R, quint8 G, quint8 B)
 
 bool hgx11net::_isConnected()
 {
-    return (_sock_p->state() == QAbstractSocket::ConnectedState);
+    bool connected = (_sock_p->state() == QAbstractSocket::ConnectedState);
+    if (!connected) {
+        _sock_p->reset();
+        _connectHost();
+        connected = (_sock_p->state() == QAbstractSocket::ConnectedState);
+    }
+    return connected;
 }
 
 void hgx11net::_connectHost()
@@ -74,13 +79,3 @@ void hgx11net::sendImage(QByteArray *imgdata)
     _cmd_m.append(",\"priority\":100}\n");
     _sock_p->write(_cmd_m);
 }
-
-// private slots
-
-void hgx11net::_disconnected()
-{
-    while (!_isConnected()) {
-        _connectHost();
-    }
-}
-

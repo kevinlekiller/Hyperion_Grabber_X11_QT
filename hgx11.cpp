@@ -11,7 +11,7 @@ hgx11::hgx11(QString addr, QString port, QString scale, QString frameskip, QStri
     _inactiveTime_m = (inactiveTime.toInt() > 0 ? QString::number(inactiveTime.toInt() * 1000) : "0");
 
     _grabber_p = new hgx11grab(_scale_m.toInt(), _frameskip_m.toUShort());
-    _hclient_p = new hgx11net(_addr_m.toStdString().c_str(), _port_m.toUShort());
+    _hclient_p = new hgx11net(_addr_m, _port_m.toUShort());
     _damage_p = new hgx11damage();
 
     _hclient_p->imgWidth = QString::number(_grabber_p->getDest_width());
