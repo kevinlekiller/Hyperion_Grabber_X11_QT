@@ -16,7 +16,7 @@ hgx11::hgx11(QHash<QString, QString> opts)
         } else if ((i.key() == "f" || i.key() == "frameskip") && (i.value().toInt() > 0 && i.value().toInt() < 256)) {
              _frameskip_m = i.value();
         } else if ((i.key() == "i" || i.key() == "inactive") && (i.value().toInt() > 0)) {
-            _inactiveTime_m = QString::number(i.value().toInt() * 1000);
+            _inactiveTime_m = (i.value().toInt() * 1000);
         } else if (i.key() == "r" || i.key() == "redadjust") {
             _redAdjust_m = _parseColorArr(i.value(), 1);
         } else if (i.key() == "g" || i.key() == "greenadjust") {
@@ -46,10 +46,10 @@ hgx11::hgx11(QHash<QString, QString> opts)
     connect(_grabber_p, SIGNAL(scaleChanged()), this, SLOT(_setImgSize()));
     connect(_grabber_p, SIGNAL(imageCreated()), this, SLOT(_sendImage()));
 
-    if (_inactiveTime_m.toInt()) {
+    if (_inactiveTime_m) {
         _timer_p = new QTimer(this);
         connect(_timer_p, SIGNAL(timeout()), this, SLOT(_inActivity()));
-        _timer_p->start(_inactiveTime_m.toInt());
+        _timer_p->start(_inactiveTime_m);
         connect(_damage_p, SIGNAL(damageDetected()), this, SLOT(_activity()));
     }
 }
@@ -105,7 +105,7 @@ void hgx11::_inActivity()
 void hgx11::_activity()
 {
     _timer_p->stop();
-    _timer_p->start(_inactiveTime_m.toInt());
+    _timer_p->start(_inactiveTime_m);
 }
 
 void hgx11::_setImgSize()

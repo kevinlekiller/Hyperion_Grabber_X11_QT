@@ -22,11 +22,11 @@ private:
     hgx11net *_hclient_p;
     QTimer *_timer_p;
 
+    int _inactiveTime_m = 0;
     QString _addr_m = "localhost";
     QString _port_m = "19444";
     QString _scale_m = "8";
     QString _frameskip_m = "0";
-    QString _inactiveTime_m = "0";
     QString _redAdjust_m = "";
     QString _greenAdjust_m = "";
     QString _blueAdjust_m = "";
