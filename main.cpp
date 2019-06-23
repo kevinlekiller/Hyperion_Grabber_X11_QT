@@ -8,7 +8,9 @@ static QCoreApplication *qapp;
 
 static void quit(int sig)
 {
-    grab->~hgx11();
+    if (grab != nullptr) {
+        grab->~hgx11();
+    }
     qapp->exit(sig);
 }
 
@@ -49,6 +51,36 @@ int main(int argc, char *argv[])
         QCoreApplication::translate("main", "seconds before turning off LEDs")
     );
     parser.addOption(inactiveTime);
+    QCommandLineOption redAdjust(QStringList() << "r" << "redadjust",
+        QCoreApplication::translate("main", "Adjustment of the red color (requires 3 space seperated values between 0 and 255) (ex. \"255,10,0\")"),
+        QCoreApplication::translate("main", "adjusts red color of LEDs")
+    );
+    parser.addOption(redAdjust);
+    QCommandLineOption greenAdjust(QStringList() << "g" << "greenadjust",
+        QCoreApplication::translate("main", "Adjustment of the green color (requires 3 space seperated values between 0 and 255) (ex. \"75,210,0\")"),
+        QCoreApplication::translate("main", "adjusts green color of LEDs")
+    );
+    parser.addOption(greenAdjust);
+    QCommandLineOption blueAdjust(QStringList() << "b" << "blueadjust",
+        QCoreApplication::translate("main", "Adjustment of the blue color (requires 3 space seperated values between 0 and 255) (ex. \"0,10,160\")"),
+        QCoreApplication::translate("main", "adjusts blue color of LEDs")
+    );
+    parser.addOption(blueAdjust);
+    QCommandLineOption temperature(QStringList() << "t" << "temperature",
+        QCoreApplication::translate("main", "Adjustment of the LED color temperature (requires 3 space seperated values between 0 and 255) (ex. \"255,255,250\")"),
+        QCoreApplication::translate("main", "adjusts LED color temperature")
+    );
+    parser.addOption(temperature);
+    QCommandLineOption threshold(QStringList() << "d" << "threshold",
+        QCoreApplication::translate("main", "Set the threshold of the leds (requires 3 space seperated values between 0.0 and 1.0) (ex. \"0.0025,0.005,0.01\")"),
+        QCoreApplication::translate("main", "adjusts LED threshold")
+    );
+    parser.addOption(threshold);
+    QCommandLineOption transform(QStringList() << "l" << "transform",
+        QCoreApplication::translate("main", "Adjusts the luminance / saturation of the leds values are in this order: luminanceGain, luminanceMin, saturationL (requires 3 space seperated values between 0.0 and 1.0) (ex. \"1.0,0.01,1.0\")"),
+        QCoreApplication::translate("main", "adjusts luminance / saturation")
+    );
+    parser.addOption(transform);
     parser.process(*qapp);
 
     if (!parser.isSet("address")) {
@@ -61,7 +93,14 @@ int main(int argc, char *argv[])
         parser.showHelp();
     }
 
-    grab = new hgx11(parser.value("address"), parser.value("port"), parser.value("scale"), parser.value("frameskip"), parser.value("inactive"));
+    QHash<QString, QString> opts;
+    QString optName;
+    for (int i = 0; i < parser.optionNames().size(); i++) {
+        optName = parser.optionNames().at(i);
+        opts.insert(optName, parser.value(optName));
+    }
+
+    grab = new hgx11(opts);
     return qapp->exec();
 }
 
