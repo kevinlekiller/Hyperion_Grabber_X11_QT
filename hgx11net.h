@@ -2,10 +2,6 @@
 #define HGX11NET_H
 
 #include <QTcpSocket>
-#include <QAbstractSocket>
-#include <QString>
-#include <QObject>
-#include <QByteArray>
 
 class hgx11net : public QObject
 {

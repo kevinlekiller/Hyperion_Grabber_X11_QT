@@ -4,7 +4,6 @@
 #include <QThread>
 #include <QDebug>
 #include <X11/extensions/Xdamage.h>
-#include <X11/Xlib.h>
 
 class hgx11damage : public QThread
 {

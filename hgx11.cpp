@@ -14,7 +14,7 @@ hgx11::hgx11(QHash<QString, QString> opts)
     while (i.hasNext()) {
         i.next();
         if ((i.key() == "a" || i.key() == "address") && !(i.value().isNull() && i.value().isEmpty())) {
-             addr = i.value();
+            addr = i.value();
         } else if ((i.key() == "p" || i.key() == "port") && i.value().toUShort()) {
             port = i.value().toUShort();
         } else if ((i.key() == "s" || i.key() == "scale") && i.value().toUShort()) {
@@ -82,7 +82,7 @@ QString hgx11::_parseColorArr(QString value, bool isInt)
     if (values.size() != 3) {
         return "";
     }
-    QString retVal = "[";
+    value = "[";
     for (int i = 0; i < 3; i++) {
         if (isInt && (values.at(i).toInt() < 0 || values.at(i).toInt() > 255)) {
             return "";
@@ -90,12 +90,12 @@ QString hgx11::_parseColorArr(QString value, bool isInt)
         if (!isInt && (values.at(i).toDouble() < 0.0 || values.at(i).toDouble() > 1.0)) {
             return "";
         }
-        retVal.append(values.at(i));
-        retVal.append(",");
+        value.append(values.at(i));
+        value.append(",");
     }
-    retVal.chop(1);
-    retVal.append("]");
-    return retVal;
+    value.chop(1);
+    value.append("]");
+    return value;
 }
 
 // private slots

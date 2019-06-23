@@ -23,8 +23,6 @@ private:
     QTimer *_timer_p;
 
     int _inactiveTime_m = 0;
-    QString _destWidth_m;
-    QString _destHeight_m;
 
     QString _parseColorArr(QString, bool);
 
