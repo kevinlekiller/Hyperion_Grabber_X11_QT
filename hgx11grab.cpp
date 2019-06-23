@@ -2,7 +2,7 @@
 
 // public
 
-hgx11grab::hgx11grab(int scaleDivisor, ushort frameSkip)
+hgx11grab::hgx11grab(unsigned short scaleDivisor, unsigned short frameSkip)
 {
     _frameSkip_m = frameSkip;
     _x11Display_p = XOpenDisplay(nullptr);

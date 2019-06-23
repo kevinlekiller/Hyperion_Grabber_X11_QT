@@ -23,16 +23,6 @@ private:
     QTimer *_timer_p;
 
     int _inactiveTime_m = 0;
-    QString _addr_m = "localhost";
-    QString _port_m = "19444";
-    QString _scale_m = "8";
-    QString _frameskip_m = "0";
-    QString _redAdjust_m = "";
-    QString _greenAdjust_m = "";
-    QString _blueAdjust_m = "";
-    QString _temperature_m = "";
-    QString _threshold_m = "";
-    QString _transform_m = "";
     QString _destWidth_m;
     QString _destHeight_m;
 
@@ -43,7 +33,6 @@ private slots:
     void _inActivity();
     void _activity();
     void _setImgSize();
-
 };
 
 #endif // HGX11_H

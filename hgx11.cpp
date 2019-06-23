@@ -4,41 +4,49 @@
 
 hgx11::hgx11(QHash<QString, QString> opts)
 {
+    QString addr = "localhost";
+    unsigned short port = 19444;
+    unsigned short scale = 8;
+    unsigned short frameskip = 0;
+    QString redAdjust = "", greenAdjust = "", blueAdjust = "";
+    QString temperature = "", threshold = "", transform = "";
     QHashIterator<QString, QString> i(opts);
     while (i.hasNext()) {
         i.next();
         if ((i.key() == "a" || i.key() == "address") && !(i.value().isNull() && i.value().isEmpty())) {
-             _addr_m = i.value();
-        } else if ((i.key() == "p" || i.key() == "port") && (i.value().toInt() > 0 && i.value().toInt() < 65536)) {
-            _port_m = i.value();
-        } else if ((i.key() == "s" || i.key() == "scale") && (i.value().toInt() > 0 && i.value().toInt() < 1001)) {
-            _scale_m = i.value();
-        } else if ((i.key() == "f" || i.key() == "frameskip") && (i.value().toInt() > 0 && i.value().toInt() < 256)) {
-             _frameskip_m = i.value();
-        } else if ((i.key() == "i" || i.key() == "inactive") && (i.value().toInt() > 0)) {
+             addr = i.value();
+        } else if ((i.key() == "p" || i.key() == "port") && i.value().toUShort()) {
+            port = i.value().toUShort();
+        } else if ((i.key() == "s" || i.key() == "scale") && i.value().toUShort()) {
+            scale = i.value().toUShort();
+        } else if ((i.key() == "f" || i.key() == "frameskip") && (i.value().toUShort() && i.value().toUShort() <= 255)) {
+            frameskip = i.value().toUShort();
+        } else if ((i.key() == "i" || i.key() == "inactive") && i.value().toInt()) {
             _inactiveTime_m = (i.value().toInt() * 1000);
         } else if (i.key() == "r" || i.key() == "redadjust") {
-            _redAdjust_m = _parseColorArr(i.value(), 1);
+            redAdjust = _parseColorArr(i.value(), 1);
         } else if (i.key() == "g" || i.key() == "greenadjust") {
-            _greenAdjust_m = _parseColorArr(i.value(), 1);
+            greenAdjust = _parseColorArr(i.value(), 1);
         } else if (i.key() == "b" || i.key() == "blueadjust") {
-            _blueAdjust_m = _parseColorArr(i.value(), 1);
+            blueAdjust = _parseColorArr(i.value(), 1);
         } else if (i.key() == "t" || i.key() == "temperature") {
-            _temperature_m = _parseColorArr(i.value(), 1);
+            temperature = _parseColorArr(i.value(), 1);
         } else if (i.key() == "d" || i.key() == "threshold") {
-            _threshold_m = _parseColorArr(i.value(), 0);
+            threshold = _parseColorArr(i.value(), 0);
         }else if ((i.key() == "l" || i.key() == "transform") && _parseColorArr(i.value(), 0) != "") {
-            _transform_m = i.value();
+            transform = i.value();
         }
     }
 
-    _grabber_p = new hgx11grab(_scale_m.toInt(), _frameskip_m.toUShort());
-    _hclient_p = new hgx11net(_addr_m, _port_m.toUShort());
+    _grabber_p = new hgx11grab(scale, frameskip);
+
+    _hclient_p = new hgx11net(addr, port);
+
     _damage_p = new hgx11damage();
 
     _hclient_p->imgWidth = QString::number(_grabber_p->getDest_width());
     _hclient_p->imgHeight = QString::number(_grabber_p->getDest_height());
-    _hclient_p->ledAdjustments(_redAdjust_m, _greenAdjust_m, _blueAdjust_m, _temperature_m, _threshold_m, _transform_m);
+    _hclient_p->ledAdjustments(redAdjust, greenAdjust, blueAdjust, temperature, threshold, transform);
 
     _damage_p->start();
 

@@ -14,7 +14,7 @@ class hgx11grab : public QObject
 public:
     QByteArray imgdata_m;
 
-    hgx11grab(int, ushort);
+    hgx11grab(unsigned short, unsigned short);
     ~hgx11grab();
 
     int getDest_width() const;
