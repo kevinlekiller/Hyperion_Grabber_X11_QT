@@ -19,3 +19,5 @@ While watching a video with a 3840x2160 60hz display, frameskip at 1 (30fps), di
 There are probably bugs, please submit a pull request if you can.
 
 To compile run `cmake . && make`, qt5 / x11 libraries are required.
+
+Example usage: `Hyperion_Grabber_X11_QT --address 192.168.2.213 --port 19444 --frameskip 1 --scale 48 --inactive 600 --redadjust "255,10,0" --greenadjust "75,210,0" --blueadjust "0,10,160" --temperature "255,255,255" --threshold "0.0,0.0,0.0" --transform "1.0,0.0,1.0"`
