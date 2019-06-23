@@ -41,6 +41,7 @@ private:
     double _scale_m;
     ushort _frameCount_m = 255;
     ushort _frameSkip_m = 0;
+    bool _freed_m = 0;
 
     void _grabFrame();
     bool _getWinAttr();

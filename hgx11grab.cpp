@@ -5,7 +5,7 @@
 hgx11grab::hgx11grab(int scaleDivisor, ushort frameSkip)
 {
     _frameSkip_m = frameSkip;
-    _x11Display_p = XOpenDisplay(":0");
+    _x11Display_p = XOpenDisplay(nullptr);
     if (_x11Display_p == nullptr) {
         qCritical() << "Failed to open X11 display.";
         return;
@@ -13,21 +13,23 @@ hgx11grab::hgx11grab(int scaleDivisor, ushort frameSkip)
 
     _window_m = DefaultRootWindow(_x11Display_p);
 
-    bool _XShmAvailable = XShmQueryExtension(_x11Display_p);
-    if (!_XShmAvailable) {
+    if (!XShmQueryExtension(_x11Display_p)) {
         qCritical() << "Xshm is: not available.";
         return;
     }
 
     int dummy, pixmaps_supported;
 
-    bool _XRenderAvailable = XRenderQueryExtension(_x11Display_p, &dummy, &dummy);
-    if (!_XRenderAvailable) {
+    if (!XRenderQueryExtension(_x11Display_p, &dummy, &dummy)) {
         qCritical() << "XRender is not available.";
         return;
     }
 
-    XShmQueryVersion(_x11Display_p, &dummy, &dummy, &pixmaps_supported);
+    if (!XShmQueryVersion(_x11Display_p, &dummy, &dummy, &pixmaps_supported)) {
+        qCritical("Could not get x shared memory version.");
+        return;
+    }
+    
     bool _XShmPixmapAvailable = pixmaps_supported && XShmPixmapFormat(_x11Display_p) == ZPixmap;
     if (!_XShmPixmapAvailable) {
         qCritical() << "XshmPixMap is: not available.";
@@ -85,6 +87,7 @@ void hgx11grab::_grabFrame()
         return;
     }
 
+    _freed_m = 0;
     _xImage_p = XShmCreateImage(
         _x11Display_p, _windowAttr_m.visual,
         uint(_windowAttr_m.depth), ZPixmap, nullptr, &_shminfo_m,
@@ -105,7 +108,7 @@ void hgx11grab::_grabFrame()
     _srcPicture_m = XRenderCreatePicture(_x11Display_p, _window_m, _srcFormat_p, CPRepeat, &_pictAttr_m);
     _dstPicture_m = XRenderCreatePicture(_x11Display_p, _pixmap_m, _dstFormat_p, CPRepeat, &_pictAttr_m);
 
-    XRenderSetPictureFilter(_x11Display_p, _srcPicture_m, "bilinear", nullptr, 0);
+    XRenderSetPictureFilter(_x11Display_p, _srcPicture_m, FilterBilinear, nullptr, 0);
     XRenderSetPictureTransform (_x11Display_p, _srcPicture_m, &_mTransform_m);
 
     XRenderComposite(
@@ -148,6 +151,8 @@ void hgx11grab::_grabFrame()
             imgdata_m.append(_xImage_p->data[i+2]);
         }
     }
+    
+    _freeResources();
 
     imageCreated();
 }
@@ -171,6 +176,9 @@ bool hgx11grab::_getWinAttr()
 
 void hgx11grab::_freeResources()
 {
+    if (_freed_m) {
+        return;
+    }
     XDestroyImage(_xImage_p);
     XShmDetach(_x11Display_p, &_shminfo_m);
     shmdt(_shminfo_m.shmaddr);
@@ -178,6 +186,7 @@ void hgx11grab::_freeResources()
     XRenderFreePicture(_x11Display_p, _srcPicture_m);
     XRenderFreePicture(_x11Display_p, _dstPicture_m);
     XFreePixmap(_x11Display_p, _pixmap_m);
+    _freed_m = 1;
 }
 
 void hgx11grab::_setScale()
