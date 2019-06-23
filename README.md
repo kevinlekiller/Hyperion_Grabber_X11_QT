@@ -1,2 +1,2 @@
 # Hyperion_Grabber_X11_QT
-Hyperion image grabber for X11 / Linux.
+Hyperion image grabber for X11 / Linux. https://github.com/hyperion-project
