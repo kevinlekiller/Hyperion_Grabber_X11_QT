@@ -7,13 +7,16 @@ hgx11net::hgx11net(QString host, ushort port)
     _sock_p = new QTcpSocket(this);
     _host_m = host;
     _port_m = port;
-    this->_connectHost();
+    _connectHost();
 }
 
 hgx11net::~hgx11net()
 {
     clearLeds();
-    _sock_p->disconnectFromHost();
+    if (_sock_p->state() == QAbstractSocket::ConnectedState) {
+        while(_sock_p->waitForBytesWritten()) {}
+        _sock_p->disconnectFromHost();
+    }
 }
 
 void hgx11net::clearLeds()
