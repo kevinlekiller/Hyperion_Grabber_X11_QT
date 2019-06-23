@@ -1,0 +1,12 @@
+[Unit]
+Description=Starts Hyperion_Grabber_X11_QT.
+After=graphical.target
+After=network.target
+
+[Service]
+ExecStart=/usr/local/sbin/Hyperion_Grabber_X11_QT --address 192.168.2.213 --port 19444 --frameskip 1 --scale 48 --inactive 600 --redadjust "255,10,0" --greenadjust "75,210,0" --blueadjust "0,10,160"
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
