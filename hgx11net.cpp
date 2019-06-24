@@ -170,16 +170,8 @@ void hgx11net::_temperatureAdjustment()
 
 void hgx11net::sendImage(QByteArray *imgdata)
 {
-    if (!_isConnected()) {
-        return;
-    }
-    _cmd_m.clear();
-    _cmd_m.append("{\"command\":\"image\",\"imagedata\":\"");
+    _cmd_m = imgCmdBuf;
     _cmd_m.append(imgdata->toBase64());
-    _cmd_m.append("\",\"imageheight\":");
-    _cmd_m.append(imgHeight);
-    _cmd_m.append(",\"imagewidth\":");
-    _cmd_m.append(imgWidth);
-    _cmd_m.append(",\"priority\":100}\n");
+    _cmd_m.append("\"}\n");
     _sendCommand();
 }

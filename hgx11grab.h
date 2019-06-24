@@ -14,7 +14,7 @@ class hgx11grab : public QObject
 public:
     QByteArray imgdata_m;
 
-    hgx11grab(unsigned short, unsigned short);
+    hgx11grab(unsigned short);
     ~hgx11grab();
 
     int getDest_width() const;
@@ -39,8 +39,6 @@ private:
     int _destHeight_m;
     int _imgSize_m;
     double _scale_m;
-    ushort _frameCount_m = 255;
-    ushort _frameSkip_m = 0;
     bool _freed_m = 0;
 
     void _grabFrame();

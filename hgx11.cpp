@@ -38,14 +38,13 @@ hgx11::hgx11(QHash<QString, QString> opts)
         }
     }
 
-    _grabber_p = new hgx11grab(scale, frameskip);
+    _grabber_p = new hgx11grab(scale);
 
     _hclient_p = new hgx11net(addr, port);
 
-    _damage_p = new hgx11damage();
+    _damage_p = new hgx11damage(frameskip);
 
-    _hclient_p->imgWidth = QString::number(_grabber_p->getDest_width());
-    _hclient_p->imgHeight = QString::number(_grabber_p->getDest_height());
+    _setImgSize();
     _hclient_p->ledAdjustments(redAdjust, greenAdjust, blueAdjust, temperature, threshold, transform);
 
     _damage_p->start();
@@ -118,6 +117,10 @@ void hgx11::_activity()
 
 void hgx11::_setImgSize()
 {
-    _hclient_p->imgWidth = QString::number(_grabber_p->getDest_width());
-    _hclient_p->imgHeight = QString::number(_grabber_p->getDest_height());
+    _hclient_p->imgCmdBuf.clear();
+    _hclient_p->imgCmdBuf.append("{\"command\":\"image\",\"priority\":100,\"imageheight\":");
+    _hclient_p->imgCmdBuf.append(QString::number(_grabber_p->getDest_height()));
+    _hclient_p->imgCmdBuf.append(",\"imagewidth\":");
+    _hclient_p->imgCmdBuf.append(QString::number(_grabber_p->getDest_width()));
+    _hclient_p->imgCmdBuf.append(",\"imagedata\":\"");
 }

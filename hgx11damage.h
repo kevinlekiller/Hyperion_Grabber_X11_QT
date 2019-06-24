@@ -9,7 +9,7 @@ class hgx11damage : public QThread
 {
     Q_OBJECT
 public:
-    hgx11damage();
+    hgx11damage(unsigned short);
     ~hgx11damage();
 
 private:
@@ -17,6 +17,8 @@ private:
     XEvent _event_m;
     Damage _damage_m;
     bool _loop_m = true;
+    ushort _frameCount_m = 255;
+    ushort _frameSkip_m = 0;
 
     void _monitor();
 

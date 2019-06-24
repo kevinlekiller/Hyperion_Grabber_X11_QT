@@ -2,9 +2,8 @@
 
 // public
 
-hgx11grab::hgx11grab(unsigned short scaleDivisor, unsigned short frameSkip)
+hgx11grab::hgx11grab(unsigned short scaleDivisor)
 {
-    _frameSkip_m = frameSkip;
     _x11Display_p = XOpenDisplay(nullptr);
     if (_x11Display_p == nullptr) {
         qCritical() << "Failed to open X11 display.";
@@ -81,7 +80,47 @@ int hgx11grab::getDest_width() const
 
 // private
 
-void hgx11grab::_grabFrame()
+bool hgx11grab::_getWinAttr()
+{
+    if (XGetWindowAttributes(_x11Display_p, _window_m, &_windowAttr_m) == 0) {
+        qWarning() << "Failed to obtain X11 window attributes.";
+        return false;
+    }
+    if (_srcWidth_m != _windowAttr_m.width || _srcHeight_m != _windowAttr_m.height) {
+        if (0 != _srcWidth_m) {
+            _freeResources();
+        }
+        _srcWidth_m = _windowAttr_m.width;
+        _srcHeight_m = _windowAttr_m.height;
+        emit scaleChanged();
+    }
+    return true;
+}
+
+void hgx11grab::_freeResources()
+{
+    if (_freed_m) {
+        return;
+    }
+    XDestroyImage(_xImage_p);
+    XShmDetach(_x11Display_p, &_shminfo_m);
+    shmdt(_shminfo_m.shmaddr);
+    shmctl(_shminfo_m.shmid, IPC_RMID, nullptr);
+    XRenderFreePicture(_x11Display_p, _srcPicture_m);
+    XRenderFreePicture(_x11Display_p, _dstPicture_m);
+    XFreePixmap(_x11Display_p, _pixmap_m);
+    _freed_m = 1;
+}
+
+void hgx11grab::_setScale()
+{
+    _scale_m = (1.0 / (double(_srcWidth_m) / double(_destWidth_m)));
+    _mTransform_m.matrix[2][2] = XDoubleToFixed(_scale_m);
+}
+
+// public slots
+
+void hgx11grab::grabFrame()
 {
     if (!_getWinAttr()) {
         return;
@@ -138,61 +177,11 @@ void hgx11grab::_grabFrame()
 
     QImage qimg = *new QImage(reinterpret_cast<const uchar *>(_xImage_p->data), _destWidth_m, _destHeight_m, _xImage_p->bytes_per_line, QImage::Format_ARGB32);
     qimg = qimg.convertToFormat(QImage::Format_RGB888);
-    imgdata_m.clear();
     imgdata_m = QByteArray::fromRawData(reinterpret_cast<const char *>(qimg.bits()), qimg.byteCount());
 
     _freeResources();
 
     imageCreated();
-}
-
-bool hgx11grab::_getWinAttr()
-{
-    if (XGetWindowAttributes(_x11Display_p, _window_m, &_windowAttr_m) == 0) {
-        qWarning() << "Failed to obtain X11 window attributes.";
-        return false;
-    }
-    if (_srcWidth_m != _windowAttr_m.width || _srcHeight_m != _windowAttr_m.height) {
-        if (0 != _srcWidth_m) {
-            _freeResources();
-        }
-        _srcWidth_m = _windowAttr_m.width;
-        _srcHeight_m = _windowAttr_m.height;
-        emit scaleChanged();
-    }
-    return true;
-}
-
-void hgx11grab::_freeResources()
-{
-    if (_freed_m) {
-        return;
-    }
-    XDestroyImage(_xImage_p);
-    XShmDetach(_x11Display_p, &_shminfo_m);
-    shmdt(_shminfo_m.shmaddr);
-    shmctl(_shminfo_m.shmid, IPC_RMID, nullptr);
-    XRenderFreePicture(_x11Display_p, _srcPicture_m);
-    XRenderFreePicture(_x11Display_p, _dstPicture_m);
-    XFreePixmap(_x11Display_p, _pixmap_m);
-    _freed_m = 1;
-}
-
-void hgx11grab::_setScale()
-{
-    _scale_m = (1.0 / (double(_srcWidth_m) / double(_destWidth_m)));
-    _mTransform_m.matrix[2][2] = XDoubleToFixed(_scale_m);
-}
-
-// public slots
-
-void hgx11grab::grabFrame()
-{
-    if (_frameCount_m++ < _frameSkip_m) {
-        return;
-    }
-    _frameCount_m = 0;
-    _grabFrame();
 }
 
 // private slots

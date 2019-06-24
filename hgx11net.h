@@ -12,8 +12,7 @@ public:
         BLUEADJUST = 0x02,
         GREENADJUST = 0x04,
     };
-    QString imgWidth;
-    QString imgHeight;
+    QByteArray imgCmdBuf;
 
     hgx11net(QString, ushort);
     ~hgx11net();
