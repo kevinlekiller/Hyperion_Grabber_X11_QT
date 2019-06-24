@@ -109,7 +109,7 @@ void hgx11grab::_grabFrame()
     _dstPicture_m = XRenderCreatePicture(_x11Display_p, _pixmap_m, _dstFormat_p, CPRepeat, &_pictAttr_m);
 
     XRenderSetPictureFilter(_x11Display_p, _srcPicture_m, FilterBilinear, nullptr, 0);
-    XRenderSetPictureTransform (_x11Display_p, _srcPicture_m, &_mTransform_m);
+    XRenderSetPictureTransform(_x11Display_p, _srcPicture_m, &_mTransform_m);
 
     XRenderComposite(
         _x11Display_p, // *dpy,
@@ -129,29 +129,18 @@ void hgx11grab::_grabFrame()
 
     XSync(_x11Display_p, false);
 
-    XShmGetImage(_x11Display_p, _pixmap_m, _xImage_p, 0, 0, 0x00FFFFFF);
+    XShmGetImage(_x11Display_p, _pixmap_m, _xImage_p, 0, 0, 0xFFFFFFFF);
 
     if (_xImage_p == nullptr) {
         qWarning() << "Failed to get image from X11 server.";
         return;
     }
 
+    QImage qimg = *new QImage(reinterpret_cast<const uchar *>(_xImage_p->data), _destWidth_m, _destHeight_m, _xImage_p->bytes_per_line, QImage::Format_RGBA8888);
+    qimg = qimg.convertToFormat(QImage::Format_RGB888);
     imgdata_m.clear();
+    imgdata_m = QByteArray::fromRawData(reinterpret_cast<const char *>(qimg.bits()), qimg.byteCount());
 
-    if (_xImage_p->byte_order == 0) { // BGR
-        for (int i = 0; i < _imgSize_m; i += 4) {
-            imgdata_m.append(_xImage_p->data[i+2]);
-            imgdata_m.append(_xImage_p->data[i+1]);
-            imgdata_m.append(_xImage_p->data[i]);
-        }
-    } else { // RGB
-        for (int i = 0; i < _imgSize_m; i += 4) {
-            imgdata_m.append(_xImage_p->data[i]);
-            imgdata_m.append(_xImage_p->data[i+1]);
-            imgdata_m.append(_xImage_p->data[i+2]);
-        }
-    }
-    
     _freeResources();
 
     imageCreated();

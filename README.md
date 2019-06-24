@@ -32,7 +32,7 @@ You should set this option so the image resolution sent to Hyperion is at least 
 Ideally you want a perfect dividor, for example if your LED array is 70x39 and screen sis 3840x2160, then you get (3840/70) 54.86 for the width and (2160/39) 55.38 for the height, the nearest perfect dividor is 48 (3840/48 = 80 ; 2160/48 = 45), if you were to use 54, then there would be rounding error (3840/54 = 71.111, but is truncated to 71) and the image sent to hyperion will not be correctly scaled.
 
 
-While watching a video with a 3840x2160 60hz display, frameskip at 1 (30fps), divisor at 24 (160x90 output resolution) CPU usage is about 2% of one cpu thread, memory usage is 17.3 KB according to HTOP. CPU usage is 0% when nothing is changing on the display.
+While watching a video with a 3840x2160 60hz display, frameskip at 1 (30fps), divisor at 24 (160x90 output resolution) CPU usage is about 0.7% of one cpu thread, memory usage is 17.3 KB according to HTOP. CPU usage is 0% when nothing is changing on the display.
 
 ## Contributing
 

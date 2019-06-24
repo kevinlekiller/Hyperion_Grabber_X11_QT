@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QDebug>
+#include <QImage>
 #include <X11/extensions/Xrender.h>
 #include <X11/extensions/XShm.h>
 #include <sys/shm.h>

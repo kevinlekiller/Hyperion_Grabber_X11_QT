@@ -6,12 +6,12 @@
 static hgx11 *grab;
 static QCoreApplication *qapp;
 
-static void quit(int sig)
+static void quit(int)
 {
     if (grab != nullptr) {
         grab->~hgx11();
     }
-    qapp->exit(sig);
+    qapp->exit();
 }
 
 int main(int argc, char *argv[])
