@@ -1,18 +1,16 @@
+# ~/.config/systemd/user/hgx11.service
+# systemctl --user enable hgx11.service && systemctl --user start hgx11.service
 [Unit]
 Description=Starts Hyperion_Grabber_X11_QT.
 After=graphical.target
 After=network.target
 
-[Service]
+[Service]    
+Environment="DISPLAY=:0"
+ExecStartPre=/usr/bin/bash -c "while ! xset q &> /dev/null; do sleep 1; done"
 ExecStart=/usr/local/sbin/Hyperion_Grabber_X11_QT --address 192.168.2.213 --port 19444 --frameskip 1 --scale 48 --inactive 600 --redadjust "255,10,0" --greenadjust "75,210,0" --blueadjust "0,10,160"
 Restart=always
 RestartSec=10
-# There seems to be a bug in systemd user services where it doesn't wait for he ExecStart process  to end so this is a hacky workaround
-# https://superuser.com/questions/1450650/wait-for-user-service-to-gracefully-exit-before-machine-shutdown-reboot
-TimeoutStopSec=5
-ExecStop=/usr/bin/hyperion-remote -a 192.168.2.213:19444 -c 000000
-ExecStopPost=/usr/bin/hyperion-remote -a 192.168.2.213:19444 -c 000000
-
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target
