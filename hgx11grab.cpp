@@ -136,7 +136,7 @@ void hgx11grab::_grabFrame()
         return;
     }
 
-    QImage qimg = *new QImage(reinterpret_cast<const uchar *>(_xImage_p->data), _destWidth_m, _destHeight_m, _xImage_p->bytes_per_line, QImage::Format_RGBA8888);
+    QImage qimg = *new QImage(reinterpret_cast<const uchar *>(_xImage_p->data), _destWidth_m, _destHeight_m, _xImage_p->bytes_per_line, QImage::Format_ARGB32);
     qimg = qimg.convertToFormat(QImage::Format_RGB888);
     imgdata_m.clear();
     imgdata_m = QByteArray::fromRawData(reinterpret_cast<const char *>(qimg.bits()), qimg.byteCount());
