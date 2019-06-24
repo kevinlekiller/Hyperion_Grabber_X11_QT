@@ -41,7 +41,6 @@ private:
     double _scale_m;
     bool _freed_m = 0;
 
-    void _grabFrame();
     bool _getWinAttr();
     void _freeResources();
     void _setScale();
