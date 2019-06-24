@@ -1,0 +1,12 @@
+# /etc/systemd/system/hgx11stop.service
+# systemctl enable hgx11stop.service && systemctl start hgx11stop.service
+[Unit]
+Description=Clears hyperion LED's on shutdown.
+
+[Service]
+ExecStart=/usr/bin/echo 1
+RemainAfterExit=1
+ExecStop=/usr/bin/hyperion-remote -a 192.168.2.213:19444 -c 000000
+
+[Install]
+WantedBy=multi-user.target

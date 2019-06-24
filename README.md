@@ -17,8 +17,10 @@ Example usage: `Hyperion_Grabber_X11_QT --address 192.168.2.213 --port 19444 --f
 
 `hgx11.service` is included as an example if you wish to use a systemd service to start the grabber on login.
 Edit it to set your options.
-You would copy it to `~/.config/systemd/user/` and enable it with `systemctl --user enable hypergrabx11.service`,
-to start it run `systemctl --user enable hypergrabx11.service`.
+You would copy it to `~/.config/systemd/user/` and enable it with `systemctl --user enable hgx11.service`,
+to start it run `systemctl --user enable hgx11.service`.
+
+`hgx11stop.service` ensures the LED's are cleared on shutdown, edit it and put it in `/etc/systemd/system/`
 
 ## Info
 
