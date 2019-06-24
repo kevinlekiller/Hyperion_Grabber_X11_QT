@@ -4,7 +4,7 @@ project(Hyperion_Grabber_X11_QT VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
-set(CMAKE_BUILD_TYPE RelWithDebInfo)
+set(CMAKE_BUILD_TYPE Release)
 
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Network REQUIRED)
