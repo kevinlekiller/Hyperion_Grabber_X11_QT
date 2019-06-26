@@ -6,25 +6,26 @@ hgx11damage::hgx11damage(unsigned short frameSkip)
 {
     _frameSkip_m = frameSkip;
     _display_p = XOpenDisplay(nullptr);
-    if(!_display_p){
-        qCritical() << "failed to open x display";
+    if(_display_p == nullptr){
+        qCritical() << "Failed to open X11 display";
         return;
     }
-    Window window = DefaultRootWindow(_display_p);
-    _damage_m = XDamageCreate(_display_p, window, XDamageReportNonEmpty);
-
+    _damage_m = XDamageCreate(_display_p, DefaultRootWindow(_display_p), XDamageReportNonEmpty);
 }
 
 hgx11damage::~hgx11damage()
 {
     _loop_m = false;
+    if (_damage_m) {
+        XDamageDestroy(_display_p, _damage_m);
+    }
 }
 
 // protected
 
 void hgx11damage::_monitor()
 {
-    if(!_display_p){
+    if(_display_p == nullptr){
         return;
     }
     while (_loop_m) {

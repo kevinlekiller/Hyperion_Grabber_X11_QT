@@ -2,38 +2,34 @@
 
 // public
 
-hgx11grab::hgx11grab(unsigned short scaleDivisor)
+hgx11grab::hgx11grab(Display *display, unsigned short scaleDivisor)
 {
-    _x11Display_p = XOpenDisplay(nullptr);
-    if (_x11Display_p == nullptr) {
-        qCritical() << "Failed to open X11 display.";
-        return;
-    }
+    _display_p = display;
 
-    _window_m = DefaultRootWindow(_x11Display_p);
-
-    if (!XShmQueryExtension(_x11Display_p)) {
+    if (!XShmQueryExtension(_display_p)) {
         qCritical() << "Xshm is: not available.";
         return;
     }
 
     int dummy, pixmaps_supported;
 
-    if (!XRenderQueryExtension(_x11Display_p, &dummy, &dummy)) {
+    if (!XRenderQueryExtension(_display_p, &dummy, &dummy)) {
         qCritical() << "XRender is not available.";
         return;
     }
 
-    if (!XShmQueryVersion(_x11Display_p, &dummy, &dummy, &pixmaps_supported)) {
+    if (!XShmQueryVersion(_display_p, &dummy, &dummy, &pixmaps_supported)) {
         qCritical("Could not get x shared memory version.");
         return;
     }
     
-    bool _XShmPixmapAvailable = pixmaps_supported && XShmPixmapFormat(_x11Display_p) == ZPixmap;
+    bool _XShmPixmapAvailable = pixmaps_supported && XShmPixmapFormat(_display_p) == ZPixmap;
     if (!_XShmPixmapAvailable) {
         qCritical() << "XshmPixMap is: not available.";
         return;
     }
+
+    _window_m = DefaultRootWindow(_display_p);
 
     if (!_getWinAttr()) {
         return;
@@ -62,9 +58,8 @@ hgx11grab::hgx11grab(unsigned short scaleDivisor)
 
 hgx11grab::~hgx11grab()
 {
-    if (_x11Display_p != nullptr) {
+    if (_display_p != nullptr) {
         _freeResources();
-        XCloseDisplay(_x11Display_p);
     }
 }
 
@@ -82,7 +77,7 @@ int hgx11grab::getDest_width() const
 
 bool hgx11grab::_getWinAttr()
 {
-    if (XGetWindowAttributes(_x11Display_p, _window_m, &_windowAttr_m) == 0) {
+    if (XGetWindowAttributes(_display_p, _window_m, &_windowAttr_m) == 0) {
         qWarning() << "Failed to obtain X11 window attributes.";
         return false;
     }
@@ -103,12 +98,12 @@ void hgx11grab::_freeResources()
         return;
     }
     XDestroyImage(_xImage_p);
-    XShmDetach(_x11Display_p, &_shminfo_m);
+    XShmDetach(_display_p, &_shminfo_m);
     shmdt(_shminfo_m.shmaddr);
     shmctl(_shminfo_m.shmid, IPC_RMID, nullptr);
-    XRenderFreePicture(_x11Display_p, _srcPicture_m);
-    XRenderFreePicture(_x11Display_p, _dstPicture_m);
-    XFreePixmap(_x11Display_p, _pixmap_m);
+    XRenderFreePicture(_display_p, _srcPicture_m);
+    XRenderFreePicture(_display_p, _dstPicture_m);
+    XFreePixmap(_display_p, _pixmap_m);
     _freed_m = 1;
 }
 
@@ -128,7 +123,7 @@ void hgx11grab::grabFrame()
 
     _freed_m = 0;
     _xImage_p = XShmCreateImage(
-        _x11Display_p, _windowAttr_m.visual,
+        _display_p, _windowAttr_m.visual,
         uint(_windowAttr_m.depth), ZPixmap, nullptr, &_shminfo_m,
         uint(_destWidth_m), uint(_destHeight_m)
     );
@@ -138,20 +133,20 @@ void hgx11grab::grabFrame()
     _shminfo_m.shmaddr = _xImage_p->data;
     _shminfo_m.readOnly = false;
 
-    XShmAttach(_x11Display_p, &_shminfo_m);
-    _pixmap_m = XShmCreatePixmap(_x11Display_p, _window_m, _xImage_p->data, &_shminfo_m, uint(_destWidth_m), uint(_destHeight_m), uint(_windowAttr_m.depth));
+    XShmAttach(_display_p, &_shminfo_m);
+    _pixmap_m = XShmCreatePixmap(_display_p, _window_m, _xImage_p->data, &_shminfo_m, uint(_destWidth_m), uint(_destHeight_m), uint(_windowAttr_m.depth));
 
-    _dstFormat_p = XRenderFindVisualFormat(_x11Display_p, _windowAttr_m.visual);
-    _srcFormat_p = XRenderFindVisualFormat(_x11Display_p, _windowAttr_m.visual);
+    _dstFormat_p = XRenderFindVisualFormat(_display_p, _windowAttr_m.visual);
+    _srcFormat_p = XRenderFindVisualFormat(_display_p, _windowAttr_m.visual);
 
-    _srcPicture_m = XRenderCreatePicture(_x11Display_p, _window_m, _srcFormat_p, CPRepeat, &_pictAttr_m);
-    _dstPicture_m = XRenderCreatePicture(_x11Display_p, _pixmap_m, _dstFormat_p, CPRepeat, &_pictAttr_m);
+    _srcPicture_m = XRenderCreatePicture(_display_p, _window_m, _srcFormat_p, CPRepeat, &_pictAttr_m);
+    _dstPicture_m = XRenderCreatePicture(_display_p, _pixmap_m, _dstFormat_p, CPRepeat, &_pictAttr_m);
 
-    XRenderSetPictureFilter(_x11Display_p, _srcPicture_m, FilterBilinear, nullptr, 0);
-    XRenderSetPictureTransform(_x11Display_p, _srcPicture_m, &_mTransform_m);
+    XRenderSetPictureFilter(_display_p, _srcPicture_m, FilterBilinear, nullptr, 0);
+    XRenderSetPictureTransform(_display_p, _srcPicture_m, &_mTransform_m);
 
     XRenderComposite(
-        _x11Display_p, // *dpy,
+        _display_p, // *dpy,
         PictOpSrc,   // op,
         _srcPicture_m, // src
         None,        // mask
@@ -166,16 +161,16 @@ void hgx11grab::grabFrame()
         uint(_destHeight_m)          // height
     );
 
-    XSync(_x11Display_p, false);
+    XSync(_display_p, false);
 
-    XShmGetImage(_x11Display_p, _pixmap_m, _xImage_p, 0, 0, 0xFFFFFFFF);
+    XShmGetImage(_display_p, _pixmap_m, _xImage_p, 0, 0, 0xFFFFFFFF);
 
     if (_xImage_p == nullptr) {
         qWarning() << "Failed to get image from X11 server.";
         return;
     }
 
-    QImage qimg = *new QImage(reinterpret_cast<const uchar *>(_xImage_p->data), _destWidth_m, _destHeight_m, _xImage_p->bytes_per_line, QImage::Format_ARGB32);
+    QImage qimg(reinterpret_cast<const uchar *>(_xImage_p->data), _destWidth_m, _destHeight_m, _xImage_p->bytes_per_line, QImage::Format_ARGB32);
     qimg = qimg.convertToFormat(QImage::Format_RGB888);
     imgdata_m = QByteArray::fromRawData(reinterpret_cast<const char *>(qimg.bits()), qimg.byteCount());
 

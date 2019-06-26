@@ -24,7 +24,12 @@ to start it run `systemctl --user enable hgx11.service`.
 
 ## Info
 
-The -i option can turn off the Hyperion LED's after configurable amount of time the X11 display has not changed.
+The -i option can turn off the Hyperion LED's after a configurable amount of time.
+
+The -j option determines how to know when to turn off the Hyperion LED's after user inactivity, 0 (Default) uses Xdamage which detects screen changes while 1 will use Xscreensaver, which detects user input (mouse / keyboard /etc).
+Xdamage should be superior, the disadvantage is if you leave a window open with anything that changes (like a console with a blinking cursor), the LED's will stay on.
+Xscreensaver has the disadvantage that if a program doesn't tell it there is activity (like if you play a video for example), the LED's will turn off.
+Ideally there would be a way to determine if the screen is inactive if a video is not playing, maybe someone knows?
 
 The -f option will skip grabbing frames, it can be used to limit the amount of images sent to hyperion. Since the images sent to hyperion is based on the amount of X11 display activity, if this option is set high and not much is going on, there may be a long delay between when images are sent to Hyperion, this option is useful if you're watching videos for example and want to reduce the CPU usage of the grabbing.
 

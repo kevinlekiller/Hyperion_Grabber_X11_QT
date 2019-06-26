@@ -47,10 +47,15 @@ int main(int argc, char *argv[])
     );
     parser.addOption(frameskip);
     QCommandLineOption inactiveTime(QStringList() << "i" << "inactive",
-        QCoreApplication::translate("main", "How many seconds after the screen has not changed to turn off the LED's. Set to 0 to disable."),
+        QCoreApplication::translate("main", "How many seconds after the screen is inactive to turn off the LED's. Set to 0 to disable."),
         QCoreApplication::translate("main", "seconds before turning off LEDs")
     );
     parser.addOption(inactiveTime);
+    QCommandLineOption inactiveType(QStringList() << "j" << "inactivetype",
+        QCoreApplication::translate("main", "If `i` or `inactive` is set, how to determine activity, using (1) Xscreensaver (based on amount of time since user input activity) or (0) Xdamage (based on amount of time since screen activity change)"),
+        QCoreApplication::translate("main", "1 to use Xscreensaver or 0 to use Xdamage for inactivity tracking")
+    );
+    parser.addOption(inactiveType);
     QCommandLineOption redAdjust(QStringList() << "r" << "redadjust",
         QCoreApplication::translate("main", "Adjustment of the red color (requires 3 space seperated values between 0 and 255) (ex. \"255,10,0\")"),
         QCoreApplication::translate("main", "adjusts red color of LEDs")

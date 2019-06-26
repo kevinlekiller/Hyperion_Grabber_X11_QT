@@ -14,14 +14,14 @@ class hgx11grab : public QObject
 public:
     QByteArray imgdata_m;
 
-    hgx11grab(unsigned short);
+    hgx11grab(Display *, unsigned short);
     ~hgx11grab();
 
     int getDest_width() const;
     int getDest_height() const;
 
 private:
-    Display *_x11Display_p;
+    Display *_display_p;
     Window _window_m;
     Picture _srcPicture_m;
     Picture _dstPicture_m;

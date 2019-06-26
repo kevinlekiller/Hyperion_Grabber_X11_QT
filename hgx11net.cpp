@@ -17,6 +17,7 @@ hgx11net::~hgx11net()
         while(_sock_p->waitForBytesWritten()) {}
         _sock_p->disconnectFromHost();
     }
+    delete _sock_p;
 }
 
 void hgx11net::clearLeds()
