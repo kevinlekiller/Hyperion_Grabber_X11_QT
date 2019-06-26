@@ -58,9 +58,7 @@ hgx11grab::hgx11grab(Display *display, unsigned short scaleDivisor)
 
 hgx11grab::~hgx11grab()
 {
-    if (_display_p != nullptr) {
-        _freeResources();
-    }
+    _freeResources();
 }
 
 int hgx11grab::getDest_height() const
