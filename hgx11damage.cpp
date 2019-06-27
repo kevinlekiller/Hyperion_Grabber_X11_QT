@@ -2,8 +2,9 @@
 
 // public
 
-hgx11damage::hgx11damage(unsigned short frameSkip)
+hgx11damage::hgx11damage(QWaitCondition * grabbed, unsigned short frameSkip)
 {
+    _grabbed_p = grabbed;
     _frameSkip_m = frameSkip;
     _display_p = XOpenDisplay(nullptr);
     if(_display_p == nullptr){
@@ -34,7 +35,10 @@ void hgx11damage::_monitor()
             XDamageSubtract(_display_p ,_damage_m, None, None);
             continue;
         }
+        _mutex_m.lock();
         emit damageDetected();
+        _grabbed_p->wait(&_mutex_m);
+        _mutex_m.unlock();
         XDamageSubtract(_display_p ,_damage_m, None, None);
         _frameCount_m = 0;
     }

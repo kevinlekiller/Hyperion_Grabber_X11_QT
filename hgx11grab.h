@@ -12,7 +12,7 @@ class hgx11grab : public QObject
 {
     Q_OBJECT
 public:
-    QByteArray imgdata_m;
+    QString imgdata_m;
 
     hgx11grab(Display *, unsigned short);
     ~hgx11grab();

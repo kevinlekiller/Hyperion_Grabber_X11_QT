@@ -140,7 +140,7 @@ void hgx11grab::grabFrame()
     _srcPicture_m = XRenderCreatePicture(_display_p, _window_m, _srcFormat_p, CPRepeat, &_pictAttr_m);
     _dstPicture_m = XRenderCreatePicture(_display_p, _pixmap_m, _dstFormat_p, CPRepeat, &_pictAttr_m);
 
-    XRenderSetPictureFilter(_display_p, _srcPicture_m, FilterBilinear, nullptr, 0);
+    XRenderSetPictureFilter(_display_p, _srcPicture_m, FilterFast, nullptr, 0);
     XRenderSetPictureTransform(_display_p, _srcPicture_m, &_mTransform_m);
 
     XRenderComposite(
@@ -170,7 +170,7 @@ void hgx11grab::grabFrame()
 
     QImage qimg(reinterpret_cast<const uchar *>(_xImage_p->data), _destWidth_m, _destHeight_m, _xImage_p->bytes_per_line, QImage::Format_ARGB32);
     qimg = qimg.convertToFormat(QImage::Format_RGB888);
-    imgdata_m = QByteArray::fromRawData(reinterpret_cast<const char *>(qimg.bits()), qimg.byteCount());
+    imgdata_m = QByteArray::fromRawData(reinterpret_cast<const char *>(qimg.bits()), qimg.byteCount()).toBase64().data();
 
     _freeResources();
 

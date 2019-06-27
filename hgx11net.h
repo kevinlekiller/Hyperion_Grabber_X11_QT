@@ -44,7 +44,7 @@ private:
     void _temperatureAdjustment();
 
 public slots:
-    void sendImage(QByteArray *);
+    void sendImage(QString);
 };
 
 #endif // HGX11NET_H

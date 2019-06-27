@@ -48,7 +48,7 @@ hgx11::hgx11(QHash<QString, QString> opts)
 
     _grabber_p = new hgx11grab(_display_p, scale);
     _hclient_p = new hgx11net(addr, port);
-    _damage_p = new hgx11damage(frameskip);
+    _damage_p = new hgx11damage(&_grabbed_m, frameskip);
     if (_inactiveXss_m) {
         _screensaver_p = new hgx11screensaver(_display_p);
         _inactiveTimeXss_m = ulong(_inactiveTime_m);
@@ -57,9 +57,7 @@ hgx11::hgx11(QHash<QString, QString> opts)
     _setImgSize();
     _hclient_p->ledAdjustments(redAdjust, greenAdjust, blueAdjust, temperature, threshold, transform);
 
-    _damage_p->start();
-
-    connect(_damage_p, SIGNAL(damageDetected()), _grabber_p, SLOT(grabFrame()));
+    connect(_damage_p, SIGNAL(damageDetected()), this, SLOT(_grabImage()));
     connect(_grabber_p, SIGNAL(scaleChanged()), this, SLOT(_setImgSize()));
     connect(_grabber_p, SIGNAL(imageCreated()), this, SLOT(_sendImage()));
     _grabActive_m = true;
@@ -75,10 +73,13 @@ hgx11::hgx11(QHash<QString, QString> opts)
             _timer_p->start(1000);
         }
     }
+
+    _damage_p->start();
 }
 
 hgx11::~hgx11()
 {
+    _grabbed_m.wakeAll();
     _timer_p->stop();
     disconnect(_damage_p, SIGNAL(damageDetected()), _grabber_p, SLOT(grabFrame()));
     disconnect(_grabber_p, SIGNAL(scaleChanged()), this, SLOT(_setImgSize()));
@@ -128,9 +129,15 @@ QString hgx11::_parseColorArr(QString value, bool isInt)
 
 // private slots
 
+void hgx11::_grabImage()
+{
+    _grabber_p->grabFrame();
+    _grabbed_m.wakeAll();
+}
+
 void hgx11::_sendImage()
 {
-    _hclient_p->sendImage(&_grabber_p->imgdata_m);
+    _hclient_p->sendImage(_grabber_p->imgdata_m);
 }
 
 void hgx11::_inActivity()

@@ -5,6 +5,7 @@
 hgx11net::hgx11net(QString host, ushort port)
 {
     _sock_p = new QTcpSocket(this);
+    _sock_p->setReadBufferSize(1);
     _host_m = host;
     _port_m = port;
     _connectHost();
@@ -80,6 +81,9 @@ void hgx11net::_sendCommand()
         return;
     }
     _sock_p->write(_cmd_m);
+    while (_sock_p->bytesToWrite()) {
+        _sock_p->waitForBytesWritten();
+    }
 }
 
 void hgx11net::_ledAdjustments()
@@ -169,10 +173,10 @@ void hgx11net::_temperatureAdjustment()
 
 // public slots
 
-void hgx11net::sendImage(QByteArray *imgdata)
+void hgx11net::sendImage(QString imgdata)
 {
     _cmd_m = imgCmdBuf;
-    _cmd_m.append(imgdata->toBase64());
+    _cmd_m.append(imgdata);
     _cmd_m.append("\"}\n");
     _sendCommand();
 }

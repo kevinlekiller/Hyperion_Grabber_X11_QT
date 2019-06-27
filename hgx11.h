@@ -18,6 +18,7 @@ public:
     ~hgx11();
 
 private:
+    QWaitCondition _grabbed_m;
     Display *_display_p;
     hgx11damage *_damage_p;
     hgx11grab *_grabber_p;
@@ -33,6 +34,7 @@ private:
     QString _parseColorArr(QString, bool);
 
 private slots:
+    void _grabImage();
     void _sendImage();
     void _inActivity();
     void _activity();
