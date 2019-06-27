@@ -86,6 +86,11 @@ int main(int argc, char *argv[])
         QCoreApplication::translate("main", "adjusts luminance / saturation")
     );
     parser.addOption(transform);
+    QCommandLineOption filter(QStringList() << "x" << "scalefilter",
+        QCoreApplication::translate("main", "X11 scaling filter to use (see X11's render.h). 0 nearest (default), 1 bilinear, 2 fast, 3 good, 4 best"),
+        QCoreApplication::translate("main", "X11 scaling filter")
+    );
+    parser.addOption(filter);
     parser.process(*qapp);
 
     if (!parser.isSet("address")) {

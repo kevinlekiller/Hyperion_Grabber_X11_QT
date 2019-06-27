@@ -8,6 +8,7 @@ hgx11::hgx11(QHash<QString, QString> opts)
     unsigned short port = 19444;
     unsigned short scale = 8;
     unsigned short frameskip = 0;
+    const char * filter = FilterNearest;
     QString redAdjust = "", greenAdjust = "", blueAdjust = "";
     QString temperature = "", threshold = "", transform = "";
     QHashIterator<QString, QString> i(opts);
@@ -37,6 +38,21 @@ hgx11::hgx11(QHash<QString, QString> opts)
             threshold = _parseColorArr(i.value(), 0);
         } else if ((i.key() == "l" || i.key() == "transform") && _parseColorArr(i.value(), 0) != "") {
             transform = i.value();
+        } else if ((i.key() == "x" || i.key() == "filter") && i.value().toInt()) {
+            switch (i.value().toInt()) {
+                case 1:
+                    filter = FilterBilinear;
+                    break;
+                case 2:
+                    filter = FilterFast;
+                    break;
+                case 3:
+                    filter = FilterGood;
+                    break;
+                case 4:
+                    filter = FilterBest;
+                    break;
+            }
         }
     }
 
@@ -46,7 +62,7 @@ hgx11::hgx11(QHash<QString, QString> opts)
         return;
     }
 
-    _grabber_p = new hgx11grab(_display_p, scale);
+    _grabber_p = new hgx11grab(_display_p, scale, filter);
     _hclient_p = new hgx11net(addr, port);
     _damage_p = new hgx11damage(&_grabbed_m, frameskip);
     if (_inactiveXss_m) {

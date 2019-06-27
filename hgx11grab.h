@@ -14,7 +14,7 @@ class hgx11grab : public QObject
 public:
     QString imgdata_m;
 
-    hgx11grab(Display *, unsigned short);
+    hgx11grab(Display *, unsigned short, const char *);
     ~hgx11grab();
 
     int getDest_width() const;
@@ -40,6 +40,7 @@ private:
     int _imgSize_m;
     double _scale_m;
     bool _freed_m = 0;
+    const char *_filter_p;
 
     bool _getWinAttr();
     void _freeResources();

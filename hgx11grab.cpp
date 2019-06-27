@@ -2,8 +2,9 @@
 
 // public
 
-hgx11grab::hgx11grab(Display *display, unsigned short scaleDivisor)
+hgx11grab::hgx11grab(Display *display, unsigned short scaleDivisor, const char *filter)
 {
+    _filter_p = filter;
     _display_p = display;
 
     if (!XShmQueryExtension(_display_p)) {
@@ -140,7 +141,7 @@ void hgx11grab::grabFrame()
     _srcPicture_m = XRenderCreatePicture(_display_p, _window_m, _srcFormat_p, CPRepeat, &_pictAttr_m);
     _dstPicture_m = XRenderCreatePicture(_display_p, _pixmap_m, _dstFormat_p, CPRepeat, &_pictAttr_m);
 
-    XRenderSetPictureFilter(_display_p, _srcPicture_m, FilterFast, nullptr, 0);
+    XRenderSetPictureFilter(_display_p, _srcPicture_m, _filter_p, nullptr, 0);
     XRenderSetPictureTransform(_display_p, _srcPicture_m, &_mTransform_m);
 
     XRenderComposite(
