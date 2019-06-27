@@ -38,7 +38,7 @@ hgx11::hgx11(QHash<QString, QString> opts)
             threshold = _parseColorArr(i.value(), 0);
         } else if ((i.key() == "l" || i.key() == "transform") && _parseColorArr(i.value(), 0) != "") {
             transform = i.value();
-        } else if ((i.key() == "x" || i.key() == "filter") && i.value().toInt()) {
+        } else if ((i.key() == "x" || i.key() == "scalefilter") && i.value().toInt()) {
             switch (i.value().toInt()) {
                 case 1:
                     filter = FilterBilinear;
