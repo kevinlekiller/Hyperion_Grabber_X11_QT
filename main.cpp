@@ -26,58 +26,19 @@ int main(int argc, char *argv[])
     parser.setApplicationDescription("X11 grabber for Hyperion using QT");
     parser.addHelpOption();
     parser.addVersionOption();
-    QCommandLineOption address(QStringList() << "a" << "address",
-        QCoreApplication::translate("main", "Address to the hyperion json server. (ex. 127.0.0.1)")
-    );
-    parser.addOption(address);
-    QCommandLineOption port(QStringList() << "p" << "port",
-        QCoreApplication::translate("main", "Port for the hyperion json server. (ex. 19444)")
-    );
-    parser.addOption(port);
-    QCommandLineOption scale(QStringList() << "s" << "scale",
-        QCoreApplication::translate("main", "Divisor used to scale your screen resolution (ex. 8 ; if your screen is 1920x1080, the result image sent to hyperion is 240x135")
-    );
-    parser.addOption(scale);
-    QCommandLineOption frameskip(QStringList() << "f" << "frameskip",
-        QCoreApplication::translate("main", "How many X11 frames to skip over. (ex. 4 ; 1 frame will be scaled and sent to hyperion and 4 will be ignored)")
-    );
-    parser.addOption(frameskip);
-    QCommandLineOption inactiveTime(QStringList() << "i" << "inactive",
-        QCoreApplication::translate("main", "How many seconds after the screen is inactive to turn off the LED's. Set to 0 to disable.")
-    );
-    parser.addOption(inactiveTime);
-    QCommandLineOption inactiveType(QStringList() << "j" << "inactivetype",
-        QCoreApplication::translate("main", "If `i` or `inactive` is set, how to determine activity, using (1) Xscreensaver (based on amount of time since user input activity) or (0) Xdamage (based on amount of time since screen activity change)")
-    );
-    parser.addOption(inactiveType);
-    QCommandLineOption redAdjust(QStringList() << "r" << "redadjust",
-        QCoreApplication::translate("main", "Adjustment of the LED's red color (requires 3 space seperated values between 0 and 255) (ex. \"255,10,0\")")
-    );
-    parser.addOption(redAdjust);
-    QCommandLineOption greenAdjust(QStringList() << "g" << "greenadjust",
-        QCoreApplication::translate("main", "Adjustment of the LED's green color (requires 3 space seperated values between 0 and 255) (ex. \"75,210,0\")")
-    );
-    parser.addOption(greenAdjust);
-    QCommandLineOption blueAdjust(QStringList() << "b" << "blueadjust",
-        QCoreApplication::translate("main", "Adjustment of the LED's blue color (requires 3 space seperated values between 0 and 255) (ex. \"0,10,160\")")
-    );
-    parser.addOption(blueAdjust);
-    QCommandLineOption temperature(QStringList() << "t" << "temperature",
-        QCoreApplication::translate("main", "Adjustment of the LED's color temperature (requires 3 space seperated values between 0 and 255) (ex. \"255,255,250\")")
-    );
-    parser.addOption(temperature);
-    QCommandLineOption threshold(QStringList() << "d" << "threshold",
-        QCoreApplication::translate("main", "Set the threshold of the LED's (requires 3 space seperated values between 0.0 and 1.0) (ex. \"0.0025,0.005,0.01\")")
-    );
-    parser.addOption(threshold);
-    QCommandLineOption transform(QStringList() << "l" << "transform",
-        QCoreApplication::translate("main", "Adjusts the luminance / saturation of the LED's values are in this order: luminanceGain, luminanceMin, saturationL (requires 3 space seperated values between 0.0 and 1.0) (ex. \"1.0,0.01,1.0\")")
-    );
-    parser.addOption(transform);
-    QCommandLineOption filter(QStringList() << "x" << "scalefilter",
-        QCoreApplication::translate("main", "X11 scaling filter to use (see X11's render.h). 0 nearest (default), 1 bilinear, 2 fast, 3 good, 4 best")
-    );
-    parser.addOption(filter);
+    parser.addOption({{"a", "address"}, "Address to the hyperion json server. (ex. 127.0.0.1)", "address"});
+    parser.addOption({{"p", "port"}, "Port for the hyperion json server. (ex. 19444)", "port"});
+    parser.addOption({{"s", "scale"}, "Divisor used to scale your screen resolution (ex. 8 ; if your screen is 1920x1080, the result image sent to hyperion is 240x135", "scale"});
+    parser.addOption({{"f", "frameskip"}, "How many X11 frames to skip over. (ex. 4 ; 1 frame will be scaled and sent to hyperion and 4 will be ignored)", "frames"});
+    parser.addOption({{"i", "inactive"}, "How many seconds after the screen is inactive to turn off the LED's. Set to 0 to disable.", "seonds"});
+    parser.addOption({{"j", "inactivetype"}, "If `i` or `inactive` is set, how to determine activity, using (1) Xscreensaver (based on amount of time since user input activity) or (0) Xdamage (based on amount of time since screen activity change)", "type"});
+    parser.addOption({{"r", "redadjust"}, "Adjustment of the LED's red color (requires 3 space seperated values between 0 and 255) (ex. \"255,10,0\")", "value"});
+    parser.addOption({{"g", "greenadjust"}, "Adjustment of the LED's green color (requires 3 space seperated values between 0 and 255) (ex. \"75,210,0\")", "value"});
+    parser.addOption({{"b", "blueadjust"}, "Adjustment of the LED's blue color (requires 3 space seperated values between 0 and 255) (ex. \"0,10,160\")", "value"});
+    parser.addOption({{"t", "temperature"}, "Adjustment of the LED's color temperature (requires 3 space seperated values between 0 and 255) (ex. \"255,255,250\")", "value"});
+    parser.addOption({{"d", "threshold"}, "Set the threshold of the LED's (requires 3 space seperated values between 0.0 and 1.0) (ex. \"0.0025,0.005,0.01\")", "value"});
+    parser.addOption({{"l", "transform"}, "Adjusts the luminance / saturation of the LED's values are in this order: luminanceGain, luminanceMin, saturationL (requires 3 space seperated values between 0.0 and 1.0) (ex. \"1.0,0.01,1.0\")", "value"});
+    parser.addOption({{"x", "scalefilter"}, "X11 scaling filter to use (see X11's render.h). 0 nearest (default), 1 bilinear, 2 fast, 3 good, 4 best", "value"});
     parser.process(*qapp);
 
     if (!parser.isSet("address")) {

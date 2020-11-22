@@ -171,9 +171,9 @@ void hgx11::_setImgSize()
 {
     _hclient_p->imgCmdBuf.clear();
     _hclient_p->imgCmdBuf.append("{\"command\":\"image\",\"priority\":100,\"imageheight\":");
-    _hclient_p->imgCmdBuf.append(QString::number(_grabber_p->getDest_height()));
+    _hclient_p->imgCmdBuf.append(QString::number(_grabber_p->getDest_height()).toUtf8());
     _hclient_p->imgCmdBuf.append(",\"imagewidth\":");
-    _hclient_p->imgCmdBuf.append(QString::number(_grabber_p->getDest_width()));
+    _hclient_p->imgCmdBuf.append(QString::number(_grabber_p->getDest_width()).toUtf8());
     _hclient_p->imgCmdBuf.append(",\"imagedata\":\"");
 }
 

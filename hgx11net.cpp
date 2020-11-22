@@ -32,11 +32,11 @@ void hgx11net::setLedColor(quint8 R, quint8 G, quint8 B)
 {
     _cmd_m.clear();
     _cmd_m.append("{\"color\":[");
-    _cmd_m.append(QString::number(R));
+    _cmd_m.append(QString::number(R).toUtf8());
     _cmd_m.append(",");
-    _cmd_m.append(QString::number(G));
+    _cmd_m.append(QString::number(G).toUtf8());
     _cmd_m.append(",");
-    _cmd_m.append(QString::number(B));
+    _cmd_m.append(QString::number(B).toUtf8());
     _cmd_m.append("],\"command\":\"color\",\"priority\":100}\n");
     _sendCommand();
 }
@@ -112,17 +112,17 @@ void hgx11net::_colorAdjustment()
     _cmd_m.append("{\"adjustment\":{");
     if (_colorAdjustmentType_m & REDADJUST) {
         _cmd_m.append("\"redAdjust\":");
-        _cmd_m.append(_redAdjust_m);
+        _cmd_m.append(_redAdjust_m.toUtf8());
         _cmd_m.append(",");
     }
     if (_colorAdjustmentType_m & GREENADJUST) {
         _cmd_m.append("\"greenAdjust\":");
-        _cmd_m.append(_greenAdjust_m);
+        _cmd_m.append(_greenAdjust_m.toUtf8());
         _cmd_m.append(",");
     }
     if (_colorAdjustmentType_m & BLUEADJUST) {
         _cmd_m.append("\"blueAdjust\":");
-        _cmd_m.append(_blueAdjust_m);
+        _cmd_m.append(_blueAdjust_m.toUtf8());
         _cmd_m.append(",");
     }
     _cmd_m.chop(1); // remove trailing ,
@@ -137,7 +137,7 @@ void hgx11net::_thresholdAdjustment()
     }
     _cmd_m.clear();
     _cmd_m.append("{\"command\":\"transform\",\"transform\":{\"threshold\":");
-    _cmd_m.append(_threshold_m);
+    _cmd_m.append(_threshold_m.toUtf8());
     _cmd_m.append("}}\n");
     _sendCommand();
 }
@@ -150,11 +150,11 @@ void hgx11net::_transformdAdjustment()
     QStringList values = _transform_m.split(',');
     _cmd_m.clear();
     _cmd_m.append("{\"command\":\"transform\",\"transform\":{\"luminanceGain\":");
-    _cmd_m.append(values.at(0));
+    _cmd_m.append(values.at(0).toUtf8());
     _cmd_m.append(",\"luminanceMinimum\":");
-    _cmd_m.append(values.at(1));
+    _cmd_m.append(values.at(1).toUtf8());
     _cmd_m.append(",\"saturationGain\":");
-    _cmd_m.append(values.at(2));
+    _cmd_m.append(values.at(2).toUtf8());
     _cmd_m.append("}}\n");
     _sendCommand();
 }
@@ -166,7 +166,7 @@ void hgx11net::_temperatureAdjustment()
     }
     _cmd_m.clear();
     _cmd_m.append("{\"command\":\"temperature\",\"temperature\":{\"correctionValues\":");
-    _cmd_m.append(_temperature_m);
+    _cmd_m.append(_temperature_m.toUtf8());
     _cmd_m.append("}}\n");
     _sendCommand();
 }
@@ -176,7 +176,7 @@ void hgx11net::_temperatureAdjustment()
 void hgx11net::sendImage(QString imgdata)
 {
     _cmd_m = imgCmdBuf;
-    _cmd_m.append(imgdata);
+    _cmd_m.append(imgdata.toUtf8());
     _cmd_m.append("\"}\n");
     _sendCommand();
 }
