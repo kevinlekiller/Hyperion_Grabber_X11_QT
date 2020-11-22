@@ -14,7 +14,7 @@ public:
     };
     QByteArray imgCmdBuf;
 
-    hgx11net(QString, ushort);
+    hgx11net(QString, ushort, QString);
     ~hgx11net();
 
     void clearLeds();
@@ -26,6 +26,7 @@ private:
     QByteArray _cmd_m;
     QString _host_m;
     quint16 _port_m;
+    QString _priority_m;
     QString _redAdjust_m = "";
     QString _greenAdjust_m = "";
     QString _blueAdjust_m = "";

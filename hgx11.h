@@ -28,6 +28,7 @@ private:
 
     int _inactiveTime_m = 0;
     unsigned long _inactiveTimeXss_m = 0;
+    QString _hyperionPriority_m;
     bool _inactiveXss_m = false;
     bool _grabActive_m;
 

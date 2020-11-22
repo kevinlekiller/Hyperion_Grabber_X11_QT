@@ -8,6 +8,7 @@ hgx11::hgx11(QHash<QString, QString> opts)
     unsigned short port = 19444;
     unsigned short scale = 8;
     unsigned short frameskip = 0;
+    unsigned short priority = 100;
     const char * filter = FilterNearest;
     QString redAdjust = "", greenAdjust = "", blueAdjust = "";
     QString temperature = "", threshold = "", transform = "";
@@ -18,6 +19,8 @@ hgx11::hgx11(QHash<QString, QString> opts)
             addr = i.value();
         } else if ((i.key() == "p" || i.key() == "port") && i.value().toUShort()) {
             port = i.value().toUShort();
+        } else if ((i.key() == "c" || i.key() == "priority") && (i.value().toUShort() && i.value().toUShort() <= 255)) {
+            priority = i.value().toUShort();
         } else if ((i.key() == "s" || i.key() == "scale") && i.value().toUShort()) {
             scale = i.value().toUShort();
         } else if ((i.key() == "f" || i.key() == "frameskip") && (i.value().toUShort() && i.value().toUShort() <= 255)) {
@@ -56,6 +59,8 @@ hgx11::hgx11(QHash<QString, QString> opts)
         }
     }
 
+    _hyperionPriority_m = QString("\"priority\":").append(QString::number(priority));
+
     _display_p = XOpenDisplay(nullptr);
     if(_display_p == nullptr){
         qCritical() << "Failed to open X11 display";
@@ -63,7 +68,7 @@ hgx11::hgx11(QHash<QString, QString> opts)
     }
 
     _grabber_p = new hgx11grab(_display_p, scale, filter);
-    _hclient_p = new hgx11net(addr, port);
+    _hclient_p = new hgx11net(addr, port, _hyperionPriority_m);
     _damage_p = new hgx11damage(&_grabbed_m, frameskip);
     if (_inactiveXss_m) {
         _screensaver_p = new hgx11screensaver(_display_p);
@@ -170,7 +175,7 @@ void hgx11::_activity()
 void hgx11::_setImgSize()
 {
     _hclient_p->imgCmdBuf.clear();
-    _hclient_p->imgCmdBuf.append("{\"command\":\"image\",\"priority\":100,\"imageheight\":");
+    _hclient_p->imgCmdBuf.append("{\"command\":\"image\",").append(_hyperionPriority_m.toUtf8()).append(",\"imageheight\":");
     _hclient_p->imgCmdBuf.append(QString::number(_grabber_p->getDest_height()).toUtf8());
     _hclient_p->imgCmdBuf.append(",\"imagewidth\":");
     _hclient_p->imgCmdBuf.append(QString::number(_grabber_p->getDest_width()).toUtf8());

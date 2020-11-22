@@ -28,6 +28,7 @@ int main(int argc, char *argv[])
     parser.addVersionOption();
     parser.addOption({{"a", "address"}, "Address to the hyperion json server. (ex. 127.0.0.1)", "address"});
     parser.addOption({{"p", "port"}, "Port for the hyperion json server. (ex. 19444)", "port"});
+    parser.addOption({{"c", "priority"}, "Priority to send to Hyperion, lower number means higher priority, defaults to 100. Range 0-255", "number"});
     parser.addOption({{"s", "scale"}, "Divisor used to scale your screen resolution (ex. 8 ; if your screen is 1920x1080, the result image sent to hyperion is 240x135", "scale"});
     parser.addOption({{"f", "frameskip"}, "How many X11 frames to skip over. (ex. 4 ; 1 frame will be scaled and sent to hyperion and 4 will be ignored)", "frames"});
     parser.addOption({{"i", "inactive"}, "How many seconds after the screen is inactive to turn off the LED's. Set to 0 to disable.", "seonds"});

@@ -2,12 +2,13 @@
 
 // public
 
-hgx11net::hgx11net(QString host, ushort port)
+hgx11net::hgx11net(QString host, ushort port, QString priority)
 {
     _sock_p = new QTcpSocket(this);
     _sock_p->setReadBufferSize(1);
     _host_m = host;
     _port_m = port;
+    _priority_m = priority;
     _connectHost();
 }
 
@@ -24,7 +25,7 @@ hgx11net::~hgx11net()
 void hgx11net::clearLeds()
 {
     _cmd_m.clear();
-    _cmd_m.append("{\"command\": \"clearall\"}\n");
+    _cmd_m.append("{\"command\": \"clearall\",").append(_priority_m.toUtf8()).append("}\n");
    _sendCommand();
 }
 
@@ -37,7 +38,7 @@ void hgx11net::setLedColor(quint8 R, quint8 G, quint8 B)
     _cmd_m.append(QString::number(G).toUtf8());
     _cmd_m.append(",");
     _cmd_m.append(QString::number(B).toUtf8());
-    _cmd_m.append("],\"command\":\"color\",\"priority\":100}\n");
+    _cmd_m.append("],\"command\":\"color\",").append(_priority_m.toUtf8()).append("}\n");
     _sendCommand();
 }
 
@@ -126,7 +127,7 @@ void hgx11net::_colorAdjustment()
         _cmd_m.append(",");
     }
     _cmd_m.chop(1); // remove trailing ,
-    _cmd_m.append("},\"command\":\"adjustment\"}\n");
+    _cmd_m.append("},\"command\":\"adjustment\",").append(_priority_m.toUtf8()).append("}\n");
     _sendCommand();
 }
 
@@ -136,7 +137,7 @@ void hgx11net::_thresholdAdjustment()
         return;
     }
     _cmd_m.clear();
-    _cmd_m.append("{\"command\":\"transform\",\"transform\":{\"threshold\":");
+    _cmd_m.append("{\"command\":\"transform\",").append(_priority_m.toUtf8()).append(",\"transform\":{\"threshold\":");
     _cmd_m.append(_threshold_m.toUtf8());
     _cmd_m.append("}}\n");
     _sendCommand();
@@ -149,7 +150,7 @@ void hgx11net::_transformdAdjustment()
     }
     QStringList values = _transform_m.split(',');
     _cmd_m.clear();
-    _cmd_m.append("{\"command\":\"transform\",\"transform\":{\"luminanceGain\":");
+    _cmd_m.append("{\"command\":\"transform\",").append(_priority_m.toUtf8()).append(",\"transform\":{\"luminanceGain\":");
     _cmd_m.append(values.at(0).toUtf8());
     _cmd_m.append(",\"luminanceMinimum\":");
     _cmd_m.append(values.at(1).toUtf8());
@@ -165,7 +166,7 @@ void hgx11net::_temperatureAdjustment()
         return;
     }
     _cmd_m.clear();
-    _cmd_m.append("{\"command\":\"temperature\",\"temperature\":{\"correctionValues\":");
+    _cmd_m.append("{\"command\":\"temperature\",").append(_priority_m.toUtf8()).append(",\"temperature\":{\"correctionValues\":");
     _cmd_m.append(_temperature_m.toUtf8());
     _cmd_m.append("}}\n");
     _sendCommand();
